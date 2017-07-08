@@ -8,13 +8,19 @@ Namespaces dictate what resources a process can see and have access to. Things l
 Cgroups dictate how much of a resource that a process has access to. Some of the resources that can be limited include cpu, memory, blkio, etc. More information can be found [here](http://man7.org/linux/man-pages/man7/cgroups.7.html)
 
 
+## Create your own container
+The best way to understand how containers work is to make one. Below is a short guide on how to create simple containers.
 
-make container directory
-`mkdir /tmp/container`
-`docker export $(docker create alpine) | tar -xvf -`
+### Make a directory to house our container in
+`$ mkdir /tmp/container && cd $_`
 
-beginnings of a container
-- explain that file system is just a bunch of files and binaries
+### Export an existing file system to the container directory
+We are gonna cheat a bit here and just export the file system of an existing docker image(alpine). We do this for convenience. It provides us with a basic file directory structure and some basic binaries for our use.
+`$ docker pull alpine`
+`$ docker export $(docker create alpine) | tar -xvf -`
+
+### Beginnings of a container
+Inside the `/bin` directory are some pre existing binaries. Try running the shell app.
 `run ./bin/sh`
 
 change root
