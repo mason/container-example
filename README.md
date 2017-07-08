@@ -39,21 +39,34 @@ Jump into the container `$ sudo chroot /tmp/container /bin/sh` and run `ps`. Not
 # Namespaces to the rescue
 We can run a process under a new namespace from the unshare command or the clone command. We will use the unshare command.
 `sudo unshare -p -f --mount-proc=/tmp/container/proc chroot /tmp/container /bin/sh`
-This is saying to run the `chroot` command in a new pid namespace(denoted by -p). We also pass in the location of the proc directory so that the new process will know to store the new proc info in that location. Run `ps` and notice that it now only has 2 process ids and they are all small process id numbers.
+This is saying to run the `chroot` command in a new pid namespace(denoted by -p). We also pass in the location of the proc directory so that the new process will know to store the new proc info in that location. Run `ps` and notice that it now only has 2 process ids and they are all small process id numbers. Run `exit` to return to host system.
 
-cgroups
-`sudo mkdir /sys/fs/cgroup/cpu/container`
-`echo "2000000" > /sys/fs/cgroup/memory/container/memory.limit_in_bytes`
+# Lets limit how much memory our container can use using cgroups
+To create a new cgroup all we have to do is create a new folder in the subsystem of the resource we want to limit. In this case we create a dirctory in the memory subsystem.
+`$ sudo mkdir /sys/fs/cgroup/memory/container`
 
+Give this container only 2mb memory limit. We can do this by echoing the size in bytes we want to limit in the file `memory.limit_in_bytes`
+`$ sudo su`
+`$ echo "2000000" > /sys/fs/cgroup/memory/container/memory.limit_in_bytes`
+`$ exit`
 
-
-`sudo unshare -p -f --mount-proc=/tmp/container/proc cgexec -g memory:container chroot /tmp/container /bin/sh`
-`mknod -m 444 /dev/urandom c 1 9`
-shell script 
+Create the shell script `mem.sh` that takes up memory
 ```
 #!/bin/sh
 random="$(dd if=/dev/urandom ibs=20000)"
 ```
+
+Make script executable `$ chmod +x mem.sh`
+Create special linux device that produces noise for our script to get random data from. `sudo mknod -m 444 dev/urandom c 1 9`
+
+Execute the `/bin/sh` script with it's own PID namespace and it's own memory cgroup.
+`sudo unshare -p -f --mount-proc=/tmp/container/proc cgexec -g memory:container chroot /tmp/container /bin/sh`
+
+Run the `./mem.sh` shell script and wait a bit. It will run out of memory.
+
+### Congratulations, you just created your own container!
+
+
 
 
 
