@@ -1,10 +1,12 @@
+# Linux Containers
+Linux container technologies like docker and rkt are popular containers engines that have gained a lot of mainstream use. This document is a short guide on how they work and how to make your own basic container.
 
 
+## Linux containers are made possible by cgroups and namespaces
+Namespaces dictate what resources a process can see and have access to. Things like Cgroups, IPC, Networks, Mounts, PIDs, Users, and UTS are the namespaces you can share or make private for new processes. More information on namespaces can be found [here](http://man7.org/linux/man-pages/man7/namespaces.7.html). Namespaces make it possible for processes in a container to feel isolated from the host environment and even vs other containers.
 
+Cgroups dictate how much of a resource that a process has access to. Some of the resources that can be limited include cpu, memory, blkio, etc. More information can be found [here](http://man7.org/linux/man-pages/man7/cgroups.7.html)
 
-PRESENTATION
-- docker made possible by cgroups and namespaces
-- demo
 
 
 make container directory
