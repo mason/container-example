@@ -30,18 +30,16 @@ When we run `pwd`, we are aware of where we are in the host filesystem. Lets mak
 `chroot` changes the root directory of the resulting process that is run(in this case /bin/sh). Now when running `pwd` it shows `/`. Our container now has it's own root directory. Our container is coming along!
 
 # Mount the proc directory
-Since our container just contains folders and binaries, we need to mount a special directory so that data from the kernel can be bubbled up to the OS. Run `sudo chroot /tmp/container /bin/sh` and then run `ps`. Notice process info doesn't return. This is because we don't have a special ps run `exit` to exit shell. Lets mount the special `/proc` directory that gives the system meta data held in the kernel.
-
+Since our container just contains folders and binaries, we need to mount a special directory so that data from the kernel can be bubbled up to the OS. Run `sudo chroot /tmp/container /bin/sh` and then run `ps`. Notice process info doesn't return. This is because we don't have a special directory called proc which is a filesystem of type proc. Run `exit` to exit shell and return to host environment. Lets mount the special `/proc` directory that gives the system the meta data held in the kernel.
 
 `$ sudo mount -t proc proc proc/`
-- go into container and run ps ... not our ps ids!
+Jump into the container `$ sudo chroot /tmp/container /bin/sh` and run `ps`. Notice there is now process info but it has process info of the host system. Lets fix that so that we only see processes of the container system. Run `exit` to return to host system.
 
 
-namespaces to the rescue
+# Namespaces to the rescue
+We can run a process under a new namespace from the unshare command or the clone command. We will use the unshare command.
 `sudo unshare -p -f --mount-proc=/tmp/container/proc chroot /tmp/container /bin/sh`
-- ls proc
-- ps
-- show linux man pages
+This is saying to run the `chroot` command in a new pid namespace(denoted by -p). We also pass in the location of the proc directory so that the new process will know to store the new proc info in that location. Run `ps` and notice that it now only has 2 process ids and they are all small process id numbers.
 
 cgroups
 `sudo mkdir /sys/fs/cgroup/cpu/container`
