@@ -60,13 +60,14 @@ Make script executable `$ chmod +x mem.sh`
 Create special linux device that produces noise for our script to get random data from. `sudo mknod -m 444 dev/urandom c 1 9`
 
 Execute the `/bin/sh` script with it's own PID namespace and it's own memory cgroup.
+
 `sudo unshare -p -f --mount-proc=/tmp/container/proc cgexec -g memory:container chroot /tmp/container /bin/sh`
 
 Run the `./mem.sh` shell script and wait a bit. It will run out of memory.
 
 ### Congratulations, you just created your own container!
 
-
+This container has its own root and pid namespaces(demonstrated by running ps). And it also is limited in memory from the cgroup we created.
 
 
 
