@@ -21,17 +21,19 @@ We are gonna cheat a bit here and just export the file system of an existing doc
 
 ### Beginnings of a container
 Inside the `/bin` directory are some pre existing binaries. Try running the shell app.
-`run ./bin/sh`
+`$ ./bin/sh`
+You are now running a shell with all the capabilities that it provides. Running `ls` will show the contents of our `/tmp/container` directory, `pwd` shows the directory `/tmp/container` etc etc. Play around in this shell. The problem you will notice is that this environment is not very isolated. `exit` from this shell.
 
-change root
-pwd - we are aware of where we are in the filesystem
-`sudo chroot /tmp/container /bin/sh`
-`pwd`
-- docker makes volumes that store the filesystem
+# Change the root of our container
+When we run `pwd`, we are aware of where we are in the host filesystem. Lets make our container have it's own root
+`$ sudo chroot /tmp/container /bin/sh`
+`chroot` changes the root directory of the resulting process that is run(in this case /bin/sh). Now when running `pwd` it shows `/`. Our container now has it's own root directory. Our container is coming along!
 
-not a complete OS yet. no proc directory. can't do things like ps
-need a proc directory. proc is a special directory that stores a filesystem of type proc which linux uses to show info on the system
-`sudo mount -t proc proc proc/`
+# Mount the proc directory
+Since our container just contains folders and binaries, we need to mount a special directory so that data from the kernel can be bubbled up to the OS. Run `sudo chroot /tmp/container /bin/sh` and then run `ps`. Notice process info doesn't return. This is because we don't have a special ps run `exit` to exit shell. Lets mount the special `/proc` directory that gives the system meta data held in the kernel.
+
+
+`$ sudo mount -t proc proc proc/`
 - go into container and run ps ... not our ps ids!
 
 
