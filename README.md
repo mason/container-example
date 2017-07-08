@@ -12,6 +12,7 @@ Cgroups dictate how much of a resource that a process has access to. Some of the
 The best way to understand how containers work is to make one. Below is a short guide on how to create simple containers. NOTE: This guide only works for linux OS. Does not work for mac.
 
 ### Make a directory to house our container in
+
 `$ mkdir /tmp/container && cd $_`
 
 ### Export an existing file system to the container directory
@@ -58,7 +59,9 @@ To create a new cgroup all we have to do is create a new folder in the subsystem
 Give this container only 2mb memory limit. We can do this by echoing the size in bytes we want to limit in the file `memory.limit_in_bytes`
 
 `$ sudo su`
+
 `$ echo "2000000" > /sys/fs/cgroup/memory/container/memory.limit_in_bytes`
+
 `$ exit`
 
 Create the shell script `mem.sh` that takes up memory
